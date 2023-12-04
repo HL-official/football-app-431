@@ -1,0 +1,33 @@
+.App {
+  text-align: center;
+  background-color: #f0f2f5; /* Light grey background */
+  color: #333; /* Darker text for better readability */
+  font-family: 'Arial', sans-serif; /* Simple, clean font */
+}
+
+/* Remove styles related to the default React logo */
+/*.App-logo {
+  ...
+}*/
+
+/* Simplify header styles, adjust as needed */
+.App-header {
+  background-color: #1976d2; /* Example primary color */
+  color: white;
+  padding: 20px;
+}
+
+/* Style for links, adjust color as per your theme */
+.App-link {
+  color: #61dafb;
+  text-decoration: none;
+}
+
+/* Responsive design considerations */
+@media (max-width: 768px) {
+  /* .App-header {
+     Adjust header styles for mobile 
+  }*/
+}
+
+/* Add more custom styles as needed */
