@@ -140,6 +140,32 @@ def add_team(team_data):
         finally:
             conn.close()
 
+def add_match(match_data):
+    conn = create_connection(DATABASE_PATH)
+    if conn:
+        try:
+            conn.execute("BEGIN;")
+            conn.execute("INSERT INTO Match (country_id, league_id, season, stage, date, match_api_id, home_team_api_id, away_team_api_id, home_team_goal, away_team_goal) VALUES (?, ?, ?, ?, ?, ? ,?, ?, ?, ?)", match_data)
+            conn.execute("COMMIT;")
+        except Error as e:
+            conn.execute("ROLLBACK;")
+            raise e
+        finally:
+            conn.close()
+
+def add_user(user_data):
+    conn = create_connection(DATABASE_PATH)
+    if conn:
+        try:
+            conn.execute("BEGIN;")
+            conn.execute("INSERT INTO User (User_Id, Password, Favorite_Team_API_ID, Favorite_Player_API_ID) VALUES (?, ?, ?, ?)", user_data)
+            conn.execute("COMMIT;")
+        except Error as e:
+            conn.execute("ROLLBACK;")
+            raise e
+        finally:
+            conn.close()            
+
 
 # API endpoint to read countries
 @app.get("/countries/")
@@ -232,6 +258,24 @@ async def read_teams():
             conn.close()
     else:
         raise HTTPException(status_code=500, detail="Teams: Error connecting to the database")
+    
+# API endpoint to read Users
+@app.get("/users/")
+async def read_teams():
+    conn = create_connection(DATABASE_PATH)
+    if conn:
+        cursor = conn.cursor()
+        query = "SELECT * FROM User"
+        try:
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            return {"users": rows}
+        except Error as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        finally:
+            conn.close()
+    else:
+        raise HTTPException(status_code=500, detail="Users: Error connecting to the database")    
 
 @app.get("/player_attributes/")
 async def read_player_attributes():
@@ -339,6 +383,15 @@ async def api_add_match(match_data: dict = Body(...)):
         return {"status": "Match added successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))    
+    
+# Endpoint to add a user
+@app.post("/add_user/")
+async def api_add_user(user_data: dict = Body(...)):
+    try:
+        add_user((user_data["User_Id"],user_data["Password"],user_data["Favorite_Team_API_ID"],user_data["Favorite_Player_API_ID"]))
+        return {"status": "User added successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))     
 
 
 # Run the app

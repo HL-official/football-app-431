@@ -21,7 +21,6 @@ const PlayersPage = () => {
       const response = await fetch('http://127.0.0.1:8000/players/');
       const data = await response.json();
       setPlayers(data.players); 
-      console.log(data.players);
       setOriginalPlayers(data.players); 
 
       const attributesResponse = await fetch('http://127.0.0.1:8000/player_attributes/');
@@ -95,7 +94,7 @@ const PlayersPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newPlayer),
+        body: JSON.stringify({newPlayer}),
       });
       
       //console.log("newPlayer",newPlayer);
@@ -185,9 +184,6 @@ const PlayersPage = () => {
       console.error('Failed to update player:', error);
     }
   };
-  
-  
-  
   
   const handleInfoClick = (playerId) => {
     const newRow = expandedRow === playerId ? null : playerId;

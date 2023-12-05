@@ -12,6 +12,7 @@ import TeamsPage from './TeamsPage';
 import CountrysPage from './CountryPage';
 import LeaguesPage from './LeaguesPage';
 import LoginPage from './LoginPage';
+import UserPage from './UserPage';
 import MatchsPage from './MatchPage';
 import PlayerAttributesPage from './PlayerAttributesPage'; 
 
@@ -43,6 +44,7 @@ function App() {
             <Button color="inherit" component={Link} to="/leagues">League</Button>
             <Button color="inherit" component={Link} to="/country">Country</Button>
             <Button color="inherit" component={Link} to="/login">Login</Button>
+            <Button color="inherit" component={Link} to="/user">User</Button>
           </Toolbar>
         </AppBar>
         <Routes>
@@ -53,6 +55,7 @@ function App() {
           <Route path="/leagues" element={<LeaguesPage />} />
           <Route path="/match" element={<MatchsPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/user" element={<UserPage />} />
           <Route path="/player_attributes/:playerId" component={PlayerAttributesPage} />
         </Routes>
       </Router>
