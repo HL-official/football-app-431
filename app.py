@@ -329,6 +329,16 @@ async def api_add_team(team_data: dict = Body(...)):
         return {"status": "Team added successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+# Endpoint to add a match
+@app.post("/add_match/")
+async def api_add_match(match_data: dict = Body(...)):
+    try:
+        add_match((match_data["country_id"],match_data["league_id"],match_data["season"],match_data["stage"], match_data["date"], match_data["match_api_id"], match_data["home_team_api_id"],match_data["home_team_goals"],match_data["away_team_goal"],))
+        return {"status": "Match added successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))    
 
 
 # Run the app
