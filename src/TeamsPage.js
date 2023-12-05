@@ -15,6 +15,7 @@ const TeamsPage = () => {
       const response = await fetch('http://127.0.0.1:8000/teams/');
       const data = await response.json();
       setTeams(data.teams); 
+      console.log(data.teams);
       setOriginalTeams(data.teams);
 
       const attributesResponse = await fetch('http://127.0.0.1:8000/team_attributes/');

@@ -17,7 +17,7 @@ app.add_middleware(
 )
 
 # Database configuration
-DATABASE_PATH = '/Users/harshladani/Desktop/Football DMBS/my-football-app/db2.sqlite'
+DATABASE_PATH = 'db2.sqlite'
 
 def create_connection(db_file):
     """ Create a database connection to the SQLite database """
