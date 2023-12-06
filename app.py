@@ -1,11 +1,16 @@
-from fastapi import FastAPI, HTTPException, Body, Depends, Request
+from fastapi import FastAPI, HTTPException, Body, Depends
 import sqlite3
-from sqlite3 import Error
+from sqlite3 import connect, Error
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
-#from passlib.context import CryptContext
+from passlib.context import CryptContext
+import logging
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+class LoginRequest(BaseModel):
+    User_id: str
+    Password: str
 
 # FastAPI app instance
 app = FastAPI()
@@ -22,7 +27,7 @@ app.add_middleware(
 DATABASE_PATH = 'db2.sqlite'
 
 # Password context for hashing and verifying passwords
-# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def create_connection(db_file):
@@ -36,29 +41,55 @@ def create_connection(db_file):
     return conn
 
 # API endpoint to handle user login
+# @app.post("/login/")
+# async def login_user(request: Request):
+#     data = await request.json()
+#     user_id = data.get("User_Id")
+#     password = data.get("Password")
+
+#     conn = create_connection(DATABASE_PATH)
+#     if conn:
+#         cursor = conn.cursor()
+#         query = "SELECT Password FROM Users WHERE User_Id = ?"
+#         try:
+#             cursor.execute(query, (user_id,))
+#             row = cursor.fetchone()
+#             if row and pwd_context.verify(password, row[0]):
+#                 return {"message": "User logged in successfully"}
+#             else:
+#                 raise HTTPException(status_code=401, detail="Invalid credentials")
+#         except Error as e:
+#             raise HTTPException(status_code=500, detail=str(e))
+#         finally:
+#             conn.close()
+#     else:
+#         raise HTTPException(status_code=500, detail="Login: Error connecting to the database")
+    
 @app.post("/login/")
-async def login_user(request: Request):
-    data = await request.json()
-    user_id = data.get("User_Id")
-    password = data.get("Password")
+async def login(login_request: LoginRequest):
+    User_Id = login_request.User_id
+    Password = login_request.Password
 
     conn = create_connection(DATABASE_PATH)
     if conn:
-        cursor = conn.cursor()
-        query = "SELECT Password FROM Users WHERE User_Id = ?"
         try:
-            cursor.execute(query, (user_id,))
-            row = cursor.fetchone()
-            if row and pwd_context.verify(password, row[0]):
-                return {"message": "User logged in successfully"}
+            cursor = conn.cursor()
+            cursor.execute("SELECT Password FROM User WHERE User_Id = (?) ", (User_Id,))
+            stored_password = cursor.fetchone()
+            
+            if stored_password and stored_password[0] == Password:
+                
+                return {"message": "User authenticated"}
             else:
-                raise HTTPException(status_code=401, detail="Invalid credentials")
+                return {"message": "Invalid credentials"}, 401
         except Error as e:
-            raise HTTPException(status_code=500, detail=str(e))
+            logging.error(f"An error occurred in the database operation: {e}")
+            print(f"An error occurreddd: {e}")
+            return {"message": "An error occurred"}, 500
         finally:
             conn.close()
     else:
-        raise HTTPException(status_code=500, detail="Login: Error connecting to the database")
+        return {"message": "Error connecting to the database"}, 500   
 
 
 def add_player(player_data):

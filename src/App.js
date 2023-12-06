@@ -15,7 +15,6 @@ import LogInPage from './LogInPage';
 import MatchsPage from './MatchPage';
 import PlayerAttributesPage from './PlayerAttributesPage'; 
 import SignUpPage from './SignUpPage';
-
 import { UserProvider } from './UserContext'; // Import UserProvider
 
 //import UserDashboard from './UserDashboard'; // Import your user dashboard component
@@ -34,9 +33,9 @@ const theme = createTheme({
 
 function App() {
   return (
+    <UserProvider>
     <ThemeProvider theme={theme}>
       <Router>
-      <UserProvider>
         <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -63,9 +62,9 @@ function App() {
           <Route path="/user" element={<LogInPage />} />
           <Route path="/player_attributes/:playerId" component={PlayerAttributesPage} />
         </Routes>
-        </UserProvider>
       </Router>
     </ThemeProvider>
+    </UserProvider>
   );
 }
 

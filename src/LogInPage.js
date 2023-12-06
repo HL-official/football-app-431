@@ -1,41 +1,31 @@
-import React, { useState, useContext } from 'react';
-import { UserContext } from './UserContext';
+import React, { useState } from 'react';
+import { useUser } from './UserContext';
 import { TextField, Button, Typography, Paper, Container } from '@mui/material';
 
-const LoginPage = () => {
-  // Declare state variables for username and password
-  const [username, setUsername] = useState('');
+const LogInPage = () => {
+  const [User_Id, setUserid] = useState('');
   const [password, setPassword] = useState('');
-
-  const { setUser, setToken } = useContext(UserContext);
+  const { login } = useUser();
+  
 
   const handleLogin = async (event) => {
     event.preventDefault();
-
-    const response = await fetch('http://127.0.0.1:8000/users/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ user_id: username, password }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      setUser(data.user);
-      setToken(data.token);
-      // Redirect to user dashboard or load user-specific data
+    const success = await login(User_Id, password);
+    if (success){
+      // User is logged in successfully
+      // Redirect to dashboard or another page as needed
+      console.log("Login successful");
     } else {
       // Handle login failure
+      console.error("Login failed");
     }
   };
 
-  // Render the login form
   return (
     <Container component="main" maxWidth="xs">
       <Paper style={{ padding: 20, marginTop: 40 }}>
         <Typography component="h1" variant="h5">
-          Sign In
+          Sign Ins
         </Typography>
         <form onSubmit={handleLogin} style={{ marginTop: 20 }}>
           <TextField
@@ -43,10 +33,10 @@ const LoginPage = () => {
             margin="normal"
             required
             fullWidth
-            label="Username"
+            label="User ID"
             autoFocus
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={setUserid.User_Id}
+            onChange={(e) => setUserid(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -55,7 +45,7 @@ const LoginPage = () => {
             fullWidth
             label="Password"
             type="password"
-            value={password}
+            value={setPassword.password}
             onChange={(e) => setPassword(e.target.value)}
           />
           <Button
@@ -73,4 +63,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default LogInPage;
