@@ -85,7 +85,6 @@ const CountriesFromArrays = convertArrayOfArraysToObject(countries,0,1);
   };
 
   const handleAddMatch = async () => {
-    // Functionality to add a new match
     try {
       const response = await fetch('http://127.0.0.1:8000/add_match/', {
         method: 'POST',
@@ -96,12 +95,8 @@ const CountriesFromArrays = convertArrayOfArraysToObject(countries,0,1);
       });
   
       if (response.ok) {
-        const addedMatch = await response.json(); // Define and assign addedMatch here
+        const addedMatch = await response.json(); 
         if (addedMatch && addedMatch.status === "Match added successfully") {
-          // Refresh the match list
-          // const newMatchesList = [...match, { ...newmatch, id: 'some_id' }]; 
-          // setMatches(newMatchesList);
-          // setOriginalMatches(newMatchesList);
           
           setNewMatch({ country_id: '',league_id: '',season: '',stage: '', date: '',match_api_id:'', home_team_api_id: '', away_team_api_id: '', home_team_goal: '', away_team_goal: '' });
         }

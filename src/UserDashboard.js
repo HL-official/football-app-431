@@ -17,17 +17,13 @@ const UserDashboard = () => {
   console.log(password);
   useEffect(() => {
     const fetchUserData = async () => {
-      // Replace with your actual API endpoint
       const response = await fetch(`http://127.0.0.1:8000/userdata/${parseInt(user)}`, {
-        // headers: {
-        //   'Authorization': `Bearer ${token}`
-        // }
       });
 
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-        setUserData(data); // Assuming the API returns data in the format expected by `userData`
+        setUserData(data); 
       } else {
         console.error('Failed to fetch user data');
       }

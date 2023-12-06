@@ -25,9 +25,6 @@ const SignUpPage = () => {
 
   const handleSignUp = async (event) => {
     event.preventDefault();
-    // Add your user creation logic here
-    // Typically, this would involve making an API call to your backend server
-    // console.log('User created:');
     try {
       
       const response = await fetch('http://127.0.0.1:8000/add_user/', {
@@ -39,20 +36,16 @@ const SignUpPage = () => {
       });
       
       if (response.ok) {
-        // const result = await response.json();
         console.log('User created:');
         setNewUser({User_Id:'', Passwordassword:'', Favorite_Team_API_ID:'', Favorite_Player_API_ID:''});
-        
-        // Handle further actions upon successful user creation (like redirecting to a login page)
+      
       
       } else {
-        // Handle errors, such as displaying a message to the user
         console.error('Failed to create user');
         alert("User already exists \n or \n User Id, Fav Team and Fav Player should only contain numbers");
       }
     } catch (error) {
       console.error('Error creating user:', error);
-      // Handle network errors or other unexpected errors
     }
   };
 

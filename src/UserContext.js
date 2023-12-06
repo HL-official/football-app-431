@@ -1,14 +1,10 @@
 import React, { createContext, useState, useContext, useCallback } from 'react';
-
-// Create a Context for the user data
 export const UserContext = createContext();
 
-// Create a Provider Component
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [password, setPassword] = useState(null);
 
-    // Function to handle login
     const login = useCallback(async (User_id, Password) => {
         try {
             const response = await fetch('http://127.0.0.1:8000/login/', {
@@ -22,7 +18,7 @@ export const UserProvider = ({ children }) => {
             const data = await response.json();
 
             if (response.ok) {
-                //const data = await response.json();
+               
                 setUser(User_id); 
                 setPassword(Password);
                 console.log(data)
@@ -36,13 +32,13 @@ export const UserProvider = ({ children }) => {
         }
     }, []);
 
-    // Function to handle logout
+   
     const logout = useCallback(() => {
         setUser(null);
         setPassword(null);
     }, []);
 
-    // The value that will be given to the context
+    
     const value = {
         user,
         password,
@@ -57,5 +53,4 @@ export const UserProvider = ({ children }) => {
     );
 };
 
-// Custom hook to use the user context
 export const useUser = () => useContext(UserContext);

@@ -24,9 +24,8 @@ const PlayersPage = () => {
       setOriginalPlayers(data.players); 
 
       const attributesResponse = await fetch('http://127.0.0.1:8000/player_attributes/');
-      //console.log(attributesResponse);
       const attributesData = await attributesResponse.json();
-      //console.log("Fetched Attributes:", attributesData.player_attributes);
+  
       setAllAttributes(attributesData.player_attributes); };
     
     fetchData().catch(console.error);
@@ -39,14 +38,12 @@ const PlayersPage = () => {
     }
     const newSortConfig = { key, direction };
     setSortConfig(newSortConfig);
-  
-    // Perform sorting when the button is clicked
+
     const sortedPlayers = sortPlayers(originalPlayers, allAttributes, newSortConfig);
     setPlayers(sortedPlayers);
   };
 
   const sortPlayers = (originalPlayers, allAttributes, sortConfig) => {
-    // Create a temporary array pairing players with their attributes
     const playersWithAttributes = originalPlayers.map(player => {
       return {
         player,
@@ -55,7 +52,6 @@ const PlayersPage = () => {
     });
     console.log("playersWithAttributes: ",playersWithAttributes);
   
-    // Sort the temporary array based on the specified attribute in sortConfig
     playersWithAttributes.sort((a, b) => {
       console.log("a.attributes: ",a.attributes[3]);
       const aValue = a.attributes ? a.attributes[3] : 0;
@@ -96,8 +92,6 @@ const PlayersPage = () => {
         },
         body: JSON.stringify(newPlayer),
       });
-      
-      //console.log("newPlayer",newPlayer);
 
       const attributesResponse = await fetch(`http://127.0.0.1:8000/add_player_attributes/${newPlayer.player_api_id}`, {
         method: 'POST',
@@ -108,7 +102,6 @@ const PlayersPage = () => {
         setNewPlayer({ player_api_id: '', player_name: '', player_fifa_api_id: '', birthday: '', height: '', weight: '', attributes: {
           overall_rating: '', finishing: '', dribbling: '', passing: '', sprint_speed: '', strength: '', gk_diving: '', gk_reflexes: ''} });
       } else {
-        // Handle failure to add attributes
         alert("Insufficient");
       }
     } catch (error) {
@@ -177,9 +170,9 @@ const PlayersPage = () => {
         setIsEditMode(false);
         setEditingPlayer(null);
         setEditingPlayerAttributes({});
-        // Reload players
+      
       } else {
-        // Handle non-OK response
+    
       }
     } catch (error) {
       console.error('Failed to update player:', error);
@@ -303,9 +296,6 @@ const PlayersPage = () => {
       </div>
     );
 }
-
-
-
 
   return (
     <div>

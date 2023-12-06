@@ -7,8 +7,6 @@ from passlib.context import CryptContext
 from typing import List, Optional, Tuple
 import logging
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
 class LoginRequest(BaseModel):
     User_id: str
     Password: str
@@ -26,18 +24,6 @@ app.add_middleware(
 
 # Database configuration
 DATABASE_PATH = 'db2.sqlite'
-
-# Password context for hashing and verifying passwords
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-# class TeamAttribute(BaseModel):
-#     attribute_name: str
-#     attribute_value: int
-
-# class PlayerAttribute(BaseModel):
-#     attribute_name: str
-#     attribute_value: int    
-
 
 def create_connection(db_file):
     """ Create a database connection to the SQLite database """
@@ -126,14 +112,12 @@ def update_player(player_data, player_api_id):
         try:
             conn.execute("BEGIN;")
 
-            # Update Player table
             conn.execute("""
                 UPDATE Player
                 SET player_name = ?, height = ?, weight = ?
                 WHERE player_api_id = ?;
             """, (player_data.player_name, player_data.height, player_data.weight, player_api_id))
 
-            # Update Player_Attributes table
             conn.execute("""
                 UPDATE Player_Attributes
                 SET overall_rating = ?, finishing = ?, dribbling = ?, passing = ?, sprint_speed = ?, strength = ?, gk_diving = ?, gk_reflexes = ?
@@ -265,7 +249,6 @@ async def read_players():
     else:
         raise HTTPException(status_code=500, detail="Players: Error connecting to the database")
 
-# API endpoint to read League
 @app.get("/leagues/")
 async def read_leagues():
     conn = create_connection(DATABASE_PATH)
@@ -283,7 +266,6 @@ async def read_leagues():
     else:
         raise HTTPException(status_code=500, detail="Leagues: Error connecting to the database")   
 
-# API endpoint to read Matches
 @app.get("/matches/")
 async def read_matches():
     conn = create_connection(DATABASE_PATH)
@@ -301,7 +283,6 @@ async def read_matches():
     else:
         raise HTTPException(status_code=500, detail="Matches: Error connecting to the database")     
 
-# API endpoint to read Teams
 @app.get("/teams/")
 async def read_teams():
     conn = create_connection(DATABASE_PATH)
@@ -319,7 +300,6 @@ async def read_teams():
     else:
         raise HTTPException(status_code=500, detail="Teams: Error connecting to the database")
     
-# API endpoint to read Users
 @app.get("/users/")
 async def read_teams():
     conn = create_connection(DATABASE_PATH)
@@ -343,7 +323,6 @@ async def get_user_data(user_id: int):
     if conn:
         cursor = conn.cursor()
         try:
-            # Fetch favorite team and player
             cursor.execute("""
                 SELECT 
                     u.User_Id,
@@ -378,7 +357,6 @@ async def get_user_data(user_id: int):
             row = cursor.fetchone()
 
             if row:
-                # Unpack the row into individual variables
                 (
                     user_id, team_name,player_name,
                     buildUpPlaySpeed, buildUpPlayPassing, chanceCreationPassing, 
@@ -387,7 +365,6 @@ async def get_user_data(user_id: int):
                     sprint_speed, strength, gk_diving, gk_reflexes
                 ) = row
 
-                # Construct the favorite team attributes dictionary
                 favorite_team_attributes = {
                     "buildUpPlaySpeed": buildUpPlaySpeed,
                     "buildUpPlayPassing": buildUpPlayPassing,
@@ -397,7 +374,6 @@ async def get_user_data(user_id: int):
                     "defenceTeamWidth": defenceTeamWidth
                 }
 
-                # Construct the favorite player attributes dictionary
                 favorite_player_attributes = {
                     "overall_rating": overall_rating,
                     "finishing": finishing,
@@ -409,7 +385,6 @@ async def get_user_data(user_id: int):
                     "gk_reflexes": gk_reflexes
                 }
 
-                # Construct the final data structure
                 user_data = {
                     "user_id": user_id,
                     "favorite_team": team_name,
@@ -418,7 +393,7 @@ async def get_user_data(user_id: int):
                     "favorite_player_attributes": favorite_player_attributes
                 }
             else:
-                user_data = None  # or handle as appropriate if no data is found
+                user_data = None 
 
             return UserData(
                 user_id = user_id,
@@ -495,7 +470,6 @@ async def api_update_player(player_api_id: int, player_data: PlayerUpdate):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Endpoint to add a player
 @app.post("/add_player/")
 async def api_add_player(player_data: dict = Body(...)):
     try:
@@ -512,8 +486,6 @@ async def api_add_player_attributes(player_api_id: int, attributes: PlayerAttrib
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-# Endpoint to remove a player
 @app.delete("/remove_player/{player_id}")
 async def api_remove_player(player_id: int):
     try:
@@ -522,7 +494,6 @@ async def api_remove_player(player_id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Endpoint to add a team
 @app.post("/add_team/")
 async def api_add_team(team_data: dict = Body(...)):
     try:
@@ -530,9 +501,7 @@ async def api_add_team(team_data: dict = Body(...)):
         return {"status": "Team added successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
-
-# Endpoint to add a match
+ 
 @app.post("/add_match/")
 async def api_add_match(match_data: dict = Body(...)):
     try:
@@ -541,7 +510,7 @@ async def api_add_match(match_data: dict = Body(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))    
     
-# Endpoint to add a user
+
 @app.post("/add_user/")
 async def api_add_user(user_data: dict = Body(...)):
     try:
@@ -598,7 +567,7 @@ async def read_top_player():
         raise HTTPException(status_code=500, detail="Error connecting to the database")
 
 
-# Run the app
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

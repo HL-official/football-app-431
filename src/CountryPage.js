@@ -4,14 +4,14 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 const CountrysPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [countrys, setCountrys] = useState([]);
-  const [originalCountrys, setOriginalCountrys] = useState([]); // New state to store the original list of countries
+  const [originalCountrys, setOriginalCountrys] = useState([]); 
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch('http://localhost:8000/countries');
       const data = await response.json();
-      setCountrys(data.countries); // Set the current countries state
-      setOriginalCountrys(data.countries); // Store the original data
+      setCountrys(data.countries); 
+      setOriginalCountrys(data.countries); 
     };
 
     fetchData().catch(console.error);
@@ -22,8 +22,7 @@ const CountrysPage = () => {
     setSearchTerm(searchTerm);
 
     if (!searchTerm) {
-      setCountrys(originalCountrys); // Reset to the full list when search is cleared
-    } else {
+      setCountrys(originalCountrys); 
       const filteredCountrys = originalCountrys.filter(country => 
         country[1].toLowerCase().includes(searchTerm.toLowerCase())
       );
