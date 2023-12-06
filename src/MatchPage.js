@@ -96,14 +96,14 @@ const CountriesFromArrays = convertArrayOfArraysToObject(countries,0,1);
       });
   
       if (response.ok) {
-        const addedMatch = await response.json(); // Define and assign addedTeam here
+        const addedMatch = await response.json(); // Define and assign addedMatch here
         if (addedMatch && addedMatch.status === "Match added successfully") {
           // Refresh the match list
           // const newMatchesList = [...match, { ...newmatch, id: 'some_id' }]; 
           // setMatches(newMatchesList);
           // setOriginalMatches(newMatchesList);
           
-          setNewMatch({ country_id: '',league_id: '',season: '',stage: '', match_date: '',match_api_id:'', home_team_api_id: '', away_team_api_id: '', home_team_goal: '', away_team_goal: '' });
+          setNewMatch({ country_id: '',league_id: '',season: '',stage: '', date: '',match_api_id:'', home_team_api_id: '', away_team_api_id: '', home_team_goal: '', away_team_goal: '' });
         }
       }
     } catch (error) {
@@ -161,8 +161,8 @@ const CountriesFromArrays = convertArrayOfArraysToObject(countries,0,1);
             {matches.map((match, index) => (
               <TableRow key={index}>
                 <TableCell component="th" scope="row">{match[0]}</TableCell>
-                <TableCell align="right">{CountriesFromArrays[match[1]]}</TableCell>
-                <TableCell align="right">{LeaguesFromArrays[match[2]]}</TableCell>
+                <TableCell align="right">{CountriesFromArrays[match[1]]||match[1]}</TableCell>
+                <TableCell align="right">{LeaguesFromArrays[match[2]]||match[2]}</TableCell>
                 <TableCell align="right">{match[3]}</TableCell>
                 <TableCell align="right">{match[4]}</TableCell>
                 <TableCell align="right">{match[5]}</TableCell>
