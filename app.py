@@ -53,7 +53,6 @@ async def login(login_request: LoginRequest):
             else:
                 return {"message": "Invalid credentials \nCheck credentials or Sign Up"}
         except Error as e:
-            logging.error(f"An error occurred in the database operation: {e}")
             print(f"An error occurreddd: {e}")
             return {"message": "An error occurred"}, 500
         finally:
