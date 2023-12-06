@@ -11,11 +11,14 @@ import PlayersPage from './PlayerPage';
 import TeamsPage from './TeamsPage';
 import CountrysPage from './CountryPage';
 import LeaguesPage from './LeaguesPage';
-import LoginPage from './SignUpPage';
-import UserPage from './UserPage';
+import LogInPage from './LogInPage';
 import MatchsPage from './MatchPage';
 import PlayerAttributesPage from './PlayerAttributesPage'; 
 import SignUpPage from './SignUpPage';
+
+import { UserProvider } from './UserContext'; // Import UserProvider
+
+//import UserDashboard from './UserDashboard'; // Import your user dashboard component
 
 // Custom theme
 const theme = createTheme({
@@ -33,6 +36,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Router>
+      <UserProvider>
         <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -45,7 +49,7 @@ function App() {
             <Button color="inherit" component={Link} to="/leagues">League</Button>
             <Button color="inherit" component={Link} to="/country">Country</Button>
             <Button color="inherit" component={Link} to="/signup">Sign Up</Button>
-            <Button color="inherit" component={Link} to="/user">User</Button>
+            <Button color="inherit" component={Link} to="/user">Log In</Button>
           </Toolbar>
         </AppBar>
         <Routes>
@@ -56,9 +60,10 @@ function App() {
           <Route path="/leagues" element={<LeaguesPage />} />
           <Route path="/match" element={<MatchsPage />} />
           <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/user" element={<UserPage />} />
+          <Route path="/user" element={<LogInPage />} />
           <Route path="/player_attributes/:playerId" component={PlayerAttributesPage} />
         </Routes>
+        </UserProvider>
       </Router>
     </ThemeProvider>
   );

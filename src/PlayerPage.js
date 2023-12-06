@@ -94,7 +94,7 @@ const PlayersPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({newPlayer}),
+        body: JSON.stringify(newPlayer),
       });
       
       //console.log("newPlayer",newPlayer);
@@ -184,6 +184,9 @@ const PlayersPage = () => {
       console.error('Failed to update player:', error);
     }
   };
+  
+  
+  
   
   const handleInfoClick = (playerId) => {
     const newRow = expandedRow === playerId ? null : playerId;
