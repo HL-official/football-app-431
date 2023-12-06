@@ -1,8 +1,10 @@
-from fastapi import FastAPI, HTTPException, Body
+from fastapi import FastAPI, HTTPException, Body, Depends, Request
 import sqlite3
 from sqlite3 import Error
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
+#from passlib.context import CryptContext
+
 
 
 # FastAPI app instance
@@ -19,6 +21,10 @@ app.add_middleware(
 # Database configuration
 DATABASE_PATH = 'db2.sqlite'
 
+# Password context for hashing and verifying passwords
+# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
 def create_connection(db_file):
     """ Create a database connection to the SQLite database """
     conn = None
@@ -28,6 +34,32 @@ def create_connection(db_file):
         print(e)
 
     return conn
+
+# API endpoint to handle user login
+@app.post("/login/")
+async def login_user(request: Request):
+    data = await request.json()
+    user_id = data.get("User_Id")
+    password = data.get("Password")
+
+    conn = create_connection(DATABASE_PATH)
+    if conn:
+        cursor = conn.cursor()
+        query = "SELECT Password FROM Users WHERE User_Id = ?"
+        try:
+            cursor.execute(query, (user_id,))
+            row = cursor.fetchone()
+            if row and pwd_context.verify(password, row[0]):
+                return {"message": "User logged in successfully"}
+            else:
+                raise HTTPException(status_code=401, detail="Invalid credentials")
+        except Error as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        finally:
+            conn.close()
+    else:
+        raise HTTPException(status_code=500, detail="Login: Error connecting to the database")
+
 
 def add_player(player_data):
     conn = create_connection(DATABASE_PATH)
