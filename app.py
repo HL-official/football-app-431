@@ -388,7 +388,7 @@ async def api_add_match(match_data: dict = Body(...)):
 @app.post("/add_user/")
 async def api_add_user(user_data: dict = Body(...)):
     try:
-        add_user((user_data["User_Id"],user_data["Password"],user_data["Favorite_Team_API_ID"],user_data["Favorite_Player_API_ID"]))
+        add_user((user_data["User_Id"], user_data["Password"],user_data["Favorite_Team_API_ID"],user_data["Favorite_Player_API_ID"]))
         return {"status": "User added successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))     

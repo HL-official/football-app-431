@@ -6,28 +6,42 @@ const SignUpPage = () => {
   const [password, setPassword] = useState('');
   const [favTeam, setFavTeam  ] = useState('');
   const [favPlayer, setFavPlayer] = useState('');
-  const [newUser, setNewUser] = useState({username:'', password:'', favTeam:'', favPlayer:''});
+  const [newUser, setNewUser] = useState({User_Id:'', Password:'', Favorite_Team_API_ID:'', Favorite_Player_API_ID:''});
 
 
-  const handleSignUp = async () => {
-    // event.preventDefault();
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch('http://127.0.0.1:8000/users/');
+      const data = await response.json();
+      setUsername(data.users); 
+      setPassword(data.users); 
+      setFavTeam(data.users); 
+      setFavPlayer(data.users); 
+
+      };
+    
+    fetchData().catch(console.error);
+  }, []);
+
+  const handleSignUp = async (event) => {
+    event.preventDefault();
     // Add your user creation logic here
     // Typically, this would involve making an API call to your backend server
-    console.log('User created:');
+    // console.log('User created:');
     try {
+      
       const response = await fetch('http://127.0.0.1:8000/add_user/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({newUser}),
-    
+        body: JSON.stringify(newUser),
       });
-      console.log('User created:');
+      
       if (response.ok) {
         // const result = await response.json();
         console.log('User created:');
-        setNewUser({username:'', password:'', favTeam:'', favPlayer:''});
+        setNewUser({User_Id:'', Passwordassword:'', Favorite_Team_API_ID:'', Favorite_Player_API_ID:''});
         
         // Handle further actions upon successful user creation (like redirecting to a login page)
       
@@ -47,16 +61,16 @@ const SignUpPage = () => {
         <Typography component="h1" variant="h5">
           Sign Up
         </Typography>
-        <form onSubmit={handleSignUp} style={{ marginTop: 20 }}>
+        <form style={{ marginTop: 20 }}>
           <TextField
             variant="outlined"
             margin="normal"
             required
             fullWidth
             label="Username"
-            autoFocus
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            type="Username"
+            value={newUser.username}
+            onChange={(e) => setNewUser({...newUser, User_Id: e.target.value})}
           />
           <TextField
             variant="outlined"
@@ -65,8 +79,8 @@ const SignUpPage = () => {
             fullWidth
             label="Password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={newUser.password}
+            onChange={(e) => setNewUser({...newUser, Password: e.target.value})}
           />
           <TextField
             variant="outlined"
@@ -75,8 +89,8 @@ const SignUpPage = () => {
             fullWidth
             label="Fav Team"
             type="Fav Team"
-            value={favTeam}
-            onChange={(e) => setFavTeam(e.target.value)}
+            value={newUser.favTeam}
+            onChange={(e) => setNewUser({...newUser,Favorite_Team_API_ID: e.target.value})}
           />
           <TextField
             variant="outlined"
@@ -85,10 +99,11 @@ const SignUpPage = () => {
             fullWidth
             label="Fav Player"
             type="Fav Player"
-            value={favPlayer}
-            onChange={(e) => setFavPlayer(e.target.value)}
+            value={newUser.favPlayer}
+            onChange={(e) => setNewUser({...newUser,Favorite_Player_API_ID: e.target.value})}
           />
           <Button
+            onClick={handleSignUp}
             type="submit"
             fullWidth
             variant="contained"
