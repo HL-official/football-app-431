@@ -48,6 +48,7 @@ const SignUpPage = () => {
       } else {
         // Handle errors, such as displaying a message to the user
         console.error('Failed to create user');
+        alert("User already exists \n or \n User Id, Fav Team and Fav Player should only contain numbers");
       }
     } catch (error) {
       console.error('Error creating user:', error);
@@ -67,7 +68,7 @@ const SignUpPage = () => {
             margin="normal"
             required
             fullWidth
-            label="Username"
+            label="User Id"
             type="Username"
             value={newUser.username}
             onChange={(e) => setNewUser({...newUser, User_Id: e.target.value})}

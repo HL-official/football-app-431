@@ -109,6 +109,7 @@ const PlayersPage = () => {
           overall_rating: '', finishing: '', dribbling: '', passing: '', sprint_speed: '', strength: '', gk_diving: '', gk_reflexes: ''} });
       } else {
         // Handle failure to add attributes
+        alert("Insufficient");
       }
     } catch (error) {
       console.error('Failed to add player:', error);
