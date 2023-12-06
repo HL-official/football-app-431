@@ -25,13 +25,13 @@ export const UserProvider = ({ children }) => {
                 //const data = await response.json();
                 setUser(data.User_id); 
                 setPassword(data.Password);
-                return true;
+                return { success: true, message: data['message'] };
             } else {
-                throw new Error(data.message || 'Failed to login');
+                return { success: false, message: data.message || 'Invalid credentials' };
             }
         } catch (error) {
             console.error('Login Error:', error);
-            return false;
+            return { success: false, message: 'Login Error: ' + error.message };
         }
     }, []);
 

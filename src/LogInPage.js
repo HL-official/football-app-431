@@ -10,14 +10,15 @@ const LogInPage = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    const success = await login(User_Id, password);
-    if (success){
+    const {success, message} = await login(User_Id, password);
+    if (success && message === "User authenticated"){
       // User is logged in successfully
       // Redirect to dashboard or another page as needed
-      console.log("Login successful");
+      console.log(message);
     } else {
       // Handle login failure
-      console.error("Login failed");
+      console.error(message);
+      alert(message);
     }
   };
 
