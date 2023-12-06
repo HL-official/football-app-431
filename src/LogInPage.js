@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { useUser } from './UserContext';
 import { TextField, Button, Typography, Paper, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
 
 const LogInPage = () => {
+  const navigate = useNavigate();
   const [User_Id, setUserid] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useUser();
@@ -15,6 +18,7 @@ const LogInPage = () => {
       // User is logged in successfully
       // Redirect to dashboard or another page as needed
       console.log(message);
+      navigate('/dashboard');
     } else {
       // Handle login failure
       console.error(message);

@@ -16,6 +16,7 @@ import MatchsPage from './MatchPage';
 import PlayerAttributesPage from './PlayerAttributesPage'; 
 import SignUpPage from './SignUpPage';
 import { UserProvider } from './UserContext'; // Import UserProvider
+import UserDashboard from './UserDashboard';
 
 //import UserDashboard from './UserDashboard'; // Import your user dashboard component
 
@@ -47,8 +48,9 @@ function App() {
             <Button color="inherit" component={Link} to="/match">Match</Button>
             <Button color="inherit" component={Link} to="/leagues">League</Button>
             <Button color="inherit" component={Link} to="/country">Country</Button>
+            <Button color="inherit" component={Link} to="/dashboard">User Dashboard</Button>
             <Button color="inherit" component={Link} to="/signup">Sign Up</Button>
-            <Button color="inherit" component={Link} to="/user">Log In</Button>
+            <Button color="inherit" component={Link} to="/login">Log In</Button>
           </Toolbar>
         </AppBar>
         <Routes>
@@ -59,7 +61,8 @@ function App() {
           <Route path="/leagues" element={<LeaguesPage />} />
           <Route path="/match" element={<MatchsPage />} />
           <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/user" element={<LogInPage />} />
+          <Route path="/login" element={<LogInPage />} />
+          <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/player_attributes/:playerId" component={PlayerAttributesPage} />
         </Routes>
       </Router>

@@ -23,8 +23,9 @@ export const UserProvider = ({ children }) => {
 
             if (response.ok) {
                 //const data = await response.json();
-                setUser(data.User_id); 
-                setPassword(data.Password);
+                setUser(User_id); 
+                setPassword(Password);
+                console.log(data)
                 return { success: true, message: data['message'] };
             } else {
                 return { success: false, message: data.message || 'Invalid credentials' };

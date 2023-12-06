@@ -4,6 +4,7 @@ from sqlite3 import connect, Error
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
 from passlib.context import CryptContext
+from typing import List, Optional, Tuple
 import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -29,6 +30,14 @@ DATABASE_PATH = 'db2.sqlite'
 # Password context for hashing and verifying passwords
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# class TeamAttribute(BaseModel):
+#     attribute_name: str
+#     attribute_value: int
+
+# class PlayerAttribute(BaseModel):
+#     attribute_name: str
+#     attribute_value: int    
+
 
 def create_connection(db_file):
     """ Create a database connection to the SQLite database """
@@ -39,31 +48,6 @@ def create_connection(db_file):
         print(e)
 
     return conn
-
-# API endpoint to handle user login
-# @app.post("/login/")
-# async def login_user(request: Request):
-#     data = await request.json()
-#     user_id = data.get("User_Id")
-#     password = data.get("Password")
-
-#     conn = create_connection(DATABASE_PATH)
-#     if conn:
-#         cursor = conn.cursor()
-#         query = "SELECT Password FROM Users WHERE User_Id = ?"
-#         try:
-#             cursor.execute(query, (user_id,))
-#             row = cursor.fetchone()
-#             if row and pwd_context.verify(password, row[0]):
-#                 return {"message": "User logged in successfully"}
-#             else:
-#                 raise HTTPException(status_code=401, detail="Invalid credentials")
-#         except Error as e:
-#             raise HTTPException(status_code=500, detail=str(e))
-#         finally:
-#             conn.close()
-#     else:
-#         raise HTTPException(status_code=500, detail="Login: Error connecting to the database")
     
 @app.post("/login/")
 async def login(login_request: LoginRequest):
@@ -81,7 +65,7 @@ async def login(login_request: LoginRequest):
                 
                 return {"message": "User authenticated"}
             else:
-                return {"message": "Invalid credentials"}
+                return {"message": "Invalid credentials \nCheck credentials or Sign Up"}
         except Error as e:
             logging.error(f"An error occurred in the database operation: {e}")
             print(f"An error occurreddd: {e}")
@@ -189,6 +173,19 @@ class PlayerAttributes(BaseModel):
     gk_diving: int
     gk_reflexes: int
 
+class TeamAttributes(BaseModel):
+    buildUpPlaySpeed: int
+    buildUpPlayPassing: int
+    chanceCreationPassing: int
+    defencePressure: int
+    defenceAggression: int
+    defenceTeamWidth: int
+class UserData(BaseModel):
+    user_id: Optional[str]
+    favorite_team: Optional[str]
+    favorite_team_attributes: TeamAttributes
+    favorite_player: Optional[str]
+    favorite_player_attributes: PlayerAttributes
 
 def add_team(team_data):
     conn = create_connection(DATABASE_PATH)
@@ -339,6 +336,103 @@ async def read_teams():
             conn.close()
     else:
         raise HTTPException(status_code=500, detail="Users: Error connecting to the database")    
+    
+@app.get("/userdata/{user_id}")
+async def get_user_data(user_id: int):
+    conn = create_connection(DATABASE_PATH)
+    if conn:
+        cursor = conn.cursor()
+        try:
+            # Fetch favorite team and player
+            cursor.execute("""
+                SELECT 
+                    u.User_Id,
+                    t.team_long_name,
+                    p.player_name,
+                    ta.buildUpPlaySpeed,
+                    ta.buildUpPlayPassing,
+                    ta.chanceCreationPassing,
+                    ta.defencePressure,
+                    ta.defenceAggression,
+                    ta.defenceTeamWidth,
+                    pa.overall_rating,
+                    pa.finishing,
+                    pa.dribbling,
+                    pa.passing,
+                    pa.sprint_speed,
+                    pa.strength,
+                    pa.gk_diving,
+                    pa.gk_reflexes
+                FROM 
+                    User u
+                LEFT JOIN 
+                    Team t ON u.Favorite_Team_API_ID = t.team_api_id
+                LEFT JOIN 
+                    Team_Attributes ta ON t.team_api_id = ta.team_api_id
+                LEFT JOIN 
+                    Player p ON u.Favorite_Player_API_ID = p.player_api_id
+                LEFT JOIN 
+                    Player_Attributes pa ON p.player_api_id = pa.player_api_id
+                WHERE 
+                    u.User_Id = ? """, (user_id,))
+            row = cursor.fetchone()
+
+            if row:
+                # Unpack the row into individual variables
+                (
+                    user_id, team_name,player_name,
+                    buildUpPlaySpeed, buildUpPlayPassing, chanceCreationPassing, 
+                    defencePressure, defenceAggression, defenceTeamWidth,
+                    overall_rating, finishing, dribbling, passing,
+                    sprint_speed, strength, gk_diving, gk_reflexes
+                ) = row
+
+                # Construct the favorite team attributes dictionary
+                favorite_team_attributes = {
+                    "buildUpPlaySpeed": buildUpPlaySpeed,
+                    "buildUpPlayPassing": buildUpPlayPassing,
+                    "chanceCreationPassing": chanceCreationPassing,
+                    "defencePressure": defencePressure,
+                    "defenceAggression": defenceAggression,
+                    "defenceTeamWidth": defenceTeamWidth
+                }
+
+                # Construct the favorite player attributes dictionary
+                favorite_player_attributes = {
+                    "overall_rating": overall_rating,
+                    "finishing": finishing,
+                    "dribbling": dribbling,
+                    "passing": passing,
+                    "sprint_speed": sprint_speed,
+                    "strength": strength,
+                    "gk_diving": gk_diving,
+                    "gk_reflexes": gk_reflexes
+                }
+
+                # Construct the final data structure
+                user_data = {
+                    "user_id": user_id,
+                    "favorite_team": team_name,
+                    "favorite_team_attributes": favorite_team_attributes,
+                    "favorite_player": player_name,
+                    "favorite_player_attributes": favorite_player_attributes
+                }
+            else:
+                user_data = None  # or handle as appropriate if no data is found
+
+            return UserData(
+                user_id = user_id,
+                favorite_team=team_name,
+                favorite_team_attributes=favorite_team_attributes,
+                favorite_player=player_name,
+                favorite_player_attributes=favorite_player_attributes
+            )
+        except Error as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        finally:
+            conn.close()
+    else:
+        raise HTTPException(status_code=500, detail="Error connecting to the database")    
 
 @app.get("/player_attributes/")
 async def read_player_attributes():
@@ -392,7 +486,7 @@ async def read_player_attributes(player_api_id: int):
             conn.close()
     else:
         raise HTTPException(status_code=500, detail="Error connecting to the database")
-
+    
 @app.put("/update_player/{player_api_id}")
 async def api_update_player(player_api_id: int, player_data: PlayerUpdate):
     try:
