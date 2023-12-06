@@ -111,7 +111,7 @@ def remove_player(player_id):
     conn = create_connection(DATABASE_PATH)
     if conn:
         try:
-            conn.execute("DELETE FROM Player WHERE player_id = ?", (player_id,))
+            conn.execute("DELETE FROM Player WHERE id = ?", (player_id,))
             conn.commit()
         except Error as e:
             conn.rollback()
@@ -548,7 +548,54 @@ async def api_add_user(user_data: dict = Body(...)):
         add_user((user_data["User_Id"], user_data["Password"],user_data["Favorite_Team_API_ID"],user_data["Favorite_Player_API_ID"]))
         return {"status": "User added successfully"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))     
+        raise HTTPException(status_code=500, detail=str(e)) 
+
+
+@app.get("/top_player/")
+async def read_top_player():
+    conn = create_connection(DATABASE_PATH)
+    if conn:
+        cursor = conn.cursor()
+        query = """
+            SELECT Player.*, Player_Attributes.*
+            FROM Player
+            INNER JOIN Player_Attributes ON Player.player_api_id = Player_Attributes.player_api_id
+            ORDER BY Player_Attributes.overall_rating DESC
+            LIMIT 1
+        """
+        try:
+            cursor.execute(query)
+            row = cursor.fetchone()
+            return {"top_player": row}
+        except Error as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        finally:
+            conn.close()
+    else:
+        raise HTTPException(status_code=500, detail="Error connecting to the database")
+
+
+@app.get("/recent_match/")
+async def read_top_player():
+    conn = create_connection(DATABASE_PATH)
+    if conn:
+        cursor = conn.cursor()
+        query = """
+            SELECT Match.*
+            FROM Match
+            ORDER BY Match.date DESC
+            LIMIT 1
+        """
+        try:
+            cursor.execute(query)
+            row = cursor.fetchone()
+            return {"recent_match": row}
+        except Error as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        finally:
+            conn.close()
+    else:
+        raise HTTPException(status_code=500, detail="Error connecting to the database")
 
 
 # Run the app
